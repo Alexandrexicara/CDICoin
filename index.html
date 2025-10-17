@@ -455,7 +455,14 @@
         const connectButton = document.getElementById("connectButton");
         const userInfo = document.getElementById("userInfo");
 
+        let isConnecting = false; // Flag para evitar múltiplas conexões
+
         async function connectWallet() {
+            if (isConnecting) {
+                alert("Conexão já em andamento. Aguarde...");
+                return;
+            }
+            isConnecting = true;
             if (window.ethereum) {
                 try {
                     // Solicitar conexão
@@ -493,9 +500,16 @@
 
                     showUserBalance();
                 } catch (err) {
-                    userInfo.innerHTML = `<p style="color: red;">Erro ao conectar: ${err.message}. Certifique-se de que a carteira está desbloqueada e tente novamente.</p>`;
+                    if (err.code === -32002) {
+                        userInfo.innerHTML = `<p style="color: red;">Erro: Há uma solicitação pendente no MetaMask. Aguarde e tente novamente.</p>`;
+                    } else {
+                        userInfo.innerHTML = `<p style="color: red;">Erro ao conectar: ${err.message}. Certifique-se de que a carteira está desbloqueada e tente novamente.</p>`;
+                    }
+                } finally {
+                    isConnecting = false;
                 }
             } else {
+                isConnecting = false;
                 userInfo.innerHTML = `
                     <p style="color: red;">MetaMask não encontrado.</p>
                     <p>Para usar o dApp:</p>
