@@ -517,9 +517,19 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
         isConnecting = true;
         if (window.ethereum) {
             try {
+                // Preferir provider da MetaMask quando houver múltiplos providers
+                const eth = (window.ethereum && Array.isArray(window.ethereum.providers))
+                    ? window.ethereum.providers.find(p => p.isMetaMask) || window.ethereum
+                    : window.ethereum;
+
+                // Atualizar UI do botão durante a conexão
+                const prevText = connectButton.textContent;
+                connectButton.textContent = 'Conectando...';
+                connectButton.disabled = true;
+
                 // Solicitar conexão
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                provider = new ethers.providers.Web3Provider(window.ethereum);
+                await eth.request({ method: 'eth_requestAccounts' });
+                provider = new ethers.providers.Web3Provider(eth);
                 signer = provider.getSigner();
                 contract = new ethers.Contract(contractAddress, abi, signer);
 
@@ -552,12 +562,19 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
 
                 showUserBalance();
             } catch (err) {
-                if (err.code === -32002) {
-                    userInfo.innerHTML = `<p style="color: red;">Erro: Há uma solicitação pendente no MetaMask. Aguarde e tente novamente.</p>`;
+                if (err && (err.code === -32002)) {
+                    userInfo.innerHTML = `<p style="color: red;">Erro: Há uma solicitação pendente no MetaMask. Abra a extensão, aprove a solicitação e tente novamente.</p>`;
+                } else if (err && (err.code === 4001)) {
+                    userInfo.innerHTML = `<p style="color: red;">Solicitação rejeitada no MetaMask. Você cancelou a conexão.</p>`;
                 } else {
-                    userInfo.innerHTML = `<p style="color: red;">Erro ao conectar: ${err.message}. Certifique-se de que a carteira está desbloqueada e tente novamente.</p>`;
+                    userInfo.innerHTML = `<p style="color: red;">Erro ao conectar: ${err && err.message ? err.message : err}. Verifique se a extensão MetaMask está instalada e desbloqueada.</p>`;
                 }
             } finally {
+                // Restaurar UI do botão
+                if (connectButton) {
+                    connectButton.textContent = 'Conectar Carteira';
+                    connectButton.disabled = false;
+                }
                 isConnecting = false;
             }
         } else {
@@ -576,6 +593,23 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
 
     async function showUserBalance() {
         try {
+            if (!window.ethereum) {
+                userInfo.innerHTML = `<p style="color: red;">MetaMask não encontrado. Instale a extensão e tente novamente.</p>`;
+                return;
+            }
+            if (!provider) {
+                userInfo.innerHTML = `<p style="color: red;">Carteira não conectada. Clique em "Conectar Carteira" para continuar.</p>`;
+                return;
+            }
+            const accounts = await provider.listAccounts();
+            if (!accounts || accounts.length === 0) {
+                userInfo.innerHTML = `<p style="color: red;">Carteira não conectada. Clique em "Conectar Carteira" para continuar.</p>`;
+                return;
+            }
+            if (!signer || !contract) {
+                userInfo.innerHTML = `<p style="color: red;">Inicializando conexão... Tente novamente em instantes.</p>`;
+                return;
+            }
             const userAddress = await signer.getAddress();
             const balance = await contract.balanceOf(userAddress);
             const balanceTokens = Number(ethers.utils.formatUnits(balance, 18));
@@ -585,14 +619,19 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                 <p><strong>Saldo CDICoin:</strong> ${balanceTokens.toFixed(6)} CDCN</p>
             `;
         } catch (err) {
-            userInfo.innerHTML = `<p style="color: red;">Erro ao buscar saldo: ${err.message}</p>`;
+            userInfo.innerHTML = `<p style="color: red;">Erro ao buscar saldo: ${(err && err.message) ? err.message : err}</p>`;
         }
     }
 
     async function buyWithBNBHandler() {
-        if (!contract) {
-            alert("Erro: Carteira não conectada. Conecte-se ao MetaMask primeiro.");
-            return;
+        if (!contract || !signer) {
+            try {
+                await connectWallet();
+            } catch (_) { /* ignore, handled in UI */ }
+            if (!contract || !signer) {
+                alert("Erro: Carteira não conectada. Conecte-se ao MetaMask primeiro.");
+                return;
+            }
         }
         try {
             const input = document.getElementById('bnbBuyAmount');
@@ -613,9 +652,14 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
     }
 
     async function buyWithUSDTHandler() {
-        if (!contract) {
-            alert("Erro: Carteira não conectada. Conecte-se ao MetaMask primeiro.");
-            return;
+        if (!contract || !signer) {
+            try {
+                await connectWallet();
+            } catch (_) { /* ignore, handled in UI */ }
+            if (!contract || !signer) {
+                alert("Erro: Carteira não conectada. Conecte-se ao MetaMask primeiro.");
+                return;
+            }
         }
         try {
             const input = document.getElementById('usdtBuyAmount');
@@ -654,6 +698,41 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
         if (buyBtn) buyBtn.onclick = buyWithBNBHandler;
         const buyUsdtBtn = document.getElementById('buyUsdtBtn');
         if (buyUsdtBtn) buyUsdtBtn.onclick = buyWithUSDTHandler;
+
+        const btnConnect = document.getElementById('connectButton');
+        const info = document.getElementById('userInfo');
+        if (!window.ethereum) {
+            if (btnConnect) {
+                btnConnect.textContent = 'Instalar MetaMask';
+                btnConnect.onclick = function() { window.open('https://metamask.io', '_blank'); };
+            }
+            if (buyBtn) { buyBtn.disabled = true; buyBtn.classList.add('opacity-50','cursor-not-allowed'); }
+            if (buyUsdtBtn) { buyUsdtBtn.disabled = true; buyUsdtBtn.classList.add('opacity-50','cursor-not-allowed'); }
+            if (info) {
+                info.innerHTML = `
+                    <p style="color: red;">MetaMask não encontrado.</p>
+                    <p>Instale a extensão para prosseguir ou use o navegador da MetaMask no celular.</p>
+                    <a href="https://metamask.io" target="_blank" style="color: blue; text-decoration: underline;">Baixar MetaMask</a>
+                `;
+            }
+        } else {
+            // Listeners para mudanças de conta/rede
+            try {
+                if (window.ethereum && window.ethereum.on) {
+                    window.ethereum.on('accountsChanged', async (accounts) => {
+                        if (!accounts || accounts.length === 0) {
+                            userInfo.innerHTML = `<p style=\"color: red;\">Carteira desconectada.</p>`;
+                            return;
+                        }
+                        await showUserBalance();
+                    });
+                    window.ethereum.on('chainChanged', (_chainId) => {
+                        // Recarregar para garantir provider correto
+                        window.location.reload();
+                    });
+                }
+            } catch (_) { /* ignore */ }
+        }
     });
 
     connectButton.onclick = async () => {
