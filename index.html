@@ -178,6 +178,15 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
             <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
                 Conecte sua carteira e gerencie seus CDICoins diretamente.
             </p>
+            <!-- Aviso MetaMask -->
+            <div id="metamaskWarning" class="hidden mb-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 max-w-2xl mx-auto rounded">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <p class="font-semibold">⚠️ MetaMask não detectado. <a href="https://metamask.io/download/" target="_blank" class="underline font-bold">Clique aqui para instalar</a></p>
+                </div>
+            </div>
             <button id="connectButton" class="bg-primary-green text-white px-8 py-3 rounded-lg hover:bg-secondary-green transition-colors" style="background-color: #059669; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;">Conectar Carteira</button>
             <div class="info mt-8 p-4 bg-white rounded-lg shadow-lg max-w-2xl mx-auto" id="userInfo"></div>
             <div id="debugPanel" class="mt-4 p-3 bg-gray-900 text-gray-100 rounded max-w-2xl mx-auto text-left text-xs overflow-auto" style="max-height: 240px;">
@@ -426,7 +435,44 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
         </div>
     </footer>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+    <!-- Carregar ethers.js com múltiplos fallbacks -->
+    <script>
+        // Função para carregar ethers.js com fallback
+        (function loadEthers() {
+            const cdns = [
+                'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js',
+                'https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js',
+                'https://cdn.ethers.io/lib/ethers-5.7.esm.min.js'
+            ];
+            
+            let currentCdn = 0;
+            
+            function tryLoad() {
+                if (currentCdn >= cdns.length) {
+                    console.error('❌ Falha ao carregar ethers.js de todos os CDNs');
+                    return;
+                }
+                
+                const script = document.createElement('script');
+                script.src = cdns[currentCdn];
+                script.async = false;
+                
+                script.onload = function() {
+                    console.log('✅ ethers.js carregado de:', cdns[currentCdn]);
+                };
+                
+                script.onerror = function() {
+                    console.warn('⚠️ Falha ao carregar de:', cdns[currentCdn]);
+                    currentCdn++;
+                    tryLoad();
+                };
+                
+                document.head.appendChild(script);
+            }
+            
+            tryLoad();
+        })();
+    </script>
     <script>
         // Definir calcularTokens globalmente ANTES do DOMContentLoaded
         window.calcularTokens = function() {
@@ -436,6 +482,44 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
             document.getElementById('bnbTokens').textContent = 'Tokens CDI: ' + (bnbVal * 100).toFixed(2);
             document.getElementById('usdtTokens').textContent = 'Tokens CDI: ' + (usdtVal / precoCDI).toFixed(2);
         };
+
+        // Função para verificar se ethers está carregado
+        let ethersLoadAttempts = 0;
+        const maxEthersLoadAttempts = 100; // 10 segundos (100 * 100ms) - aumentado para dar tempo aos fallbacks
+        
+        function waitForEthers(callback) {
+            if (typeof ethers !== 'undefined') {
+                console.log('✅ ethers.js disponível e pronto para uso');
+                console.log('📦 Versão do ethers.js:', ethers.version || 'desconhecida');
+                callback();
+            } else {
+                ethersLoadAttempts++;
+                if (ethersLoadAttempts >= maxEthersLoadAttempts) {
+                    console.error('❌ Timeout: ethers.js não carregou em 10 segundos');
+                    const userInfo = document.getElementById('userInfo');
+                    if (userInfo) {
+                        userInfo.innerHTML = `
+                            <p style="color: red; font-weight: bold;">⚠️ Erro ao carregar bibliotecas necessárias</p>
+                            <p>Possíveis causas:</p>
+                            <ul style="text-align: left; display: inline-block; margin: 8px 0;">
+                                <li>Conexão com internet instável</li>
+                                <li>Firewall ou bloqueador de anúncios</li>
+                                <li>CDNs indisponíveis</li>
+                            </ul>
+                            <button onclick="location.reload()" style="background: #059669; color: white; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; margin-top: 8px;">
+                                🔄 Recarregar Página
+                            </button>
+                        `;
+                    }
+                    return;
+                }
+                // Log a cada segundo apenas
+                if (ethersLoadAttempts % 10 === 0) {
+                    console.log(`⏳ Aguardando ethers.js... (${ethersLoadAttempts/10}s de 10s)`);
+                }
+                setTimeout(() => waitForEthers(callback), 100);
+            }
+        }
 
         // Aguardar o carregamento do DOM
         document.addEventListener('DOMContentLoaded', function() {
@@ -509,21 +593,25 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
             }
         }
 
-        // dApp CDICoin Functions
-        const contractAddress = "0xC5BbF987449d2AC90942D77228bc1657F5E88F49"; // Seu contrato
-        const abi = [
-            "function balanceOf(address) view returns (uint256)",
-            "function decimals() view returns (uint8)",
-            "function buyWithBNB() payable",
-            "function buyWithUSDT(uint256 usdtAmount)"
-        ];
+        // Inicializar dApp após ethers.js carregar
+        function initDApp() {
+            console.log('🚀 Inicializando dApp CDICoin...');
+            
+            // dApp CDICoin Functions
+            const contractAddress = "0xC5BbF987449d2AC90942D77228bc1657F5E88F49"; // Seu contrato
+            const abi = [
+                "function balanceOf(address) view returns (uint256)",
+                "function decimals() view returns (uint8)",
+                "function buyWithBNB() payable",
+                "function buyWithUSDT(uint256 usdtAmount)"
+            ];
 
-    let provider;
-    let signer;
-    let contract;
+            let provider;
+            let signer;
+            let contract;
 
-    const connectButton = document.getElementById("connectButton");
-    const userInfo = document.getElementById("userInfo");
+            const connectButton = document.getElementById("connectButton");
+            const userInfo = document.getElementById("userInfo");
 
     // Debug helpers
     function dbg(msg, data) {
@@ -545,79 +633,124 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
             return;
         }
         isConnecting = true;
-        if (window.ethereum) {
-            try {
-                // Preferir provider da MetaMask quando houver múltiplos providers
-                const eth = (window.ethereum && Array.isArray(window.ethereum.providers))
-                    ? window.ethereum.providers.find(p => p.isMetaMask) || window.ethereum
-                    : window.ethereum;
+        
+        // Verificar se ethers.js está carregado
+        if (typeof ethers === 'undefined') {
+            isConnecting = false;
+            dbg('ethers.js não carregado');
+            userInfo.innerHTML = `<p style="color: red;">Erro: Biblioteca ethers.js não carregada. Recarregue a página.</p>`;
+            alert('Erro ao carregar bibliotecas necessárias. Por favor, recarregue a página.');
+            return;
+        }
+        
+        // Verificação aprimorada do MetaMask
+        const hasMetaMask = window.ethereum && (window.ethereum.isMetaMask || 
+                           (window.ethereum.providers && window.ethereum.providers.some(p => p.isMetaMask)));
+        
+        if (!window.ethereum || !hasMetaMask) {
+            isConnecting = false;
+            const mobile = isMobile();
+            dbg('MetaMask não instalado ou não detectado', `Mobile: ${mobile}, window.ethereum exists: ${!!window.ethereum}`);
+            
+            if (mobile) {
+                userInfo.innerHTML = `
+                    <p style="color: red;">MetaMask não encontrado.</p>
+                    <p>Você está em um dispositivo móvel. Para usar o dApp:</p>
+                    <ol style="text-align: left; display: inline-block;">
+                        <li>Baixe o app <a href="https://metamask.io/download/" target="_blank" style="color: blue;">MetaMask</a></li>
+                        <li>Abra este site DENTRO do navegador do MetaMask</li>
+                        <li>Ou clique no botão "Abrir no navegador da MetaMask" acima</li>
+                    </ol>
+                `;
+            } else {
+                userInfo.innerHTML = `
+                    <p style="color: red;">MetaMask não encontrado.</p>
+                    <p>Para usar o dApp:</p>
+                    <ul style="text-align: left; display: inline-block;">
+                        <li>Instale a extensão <a href="https://metamask.io/download/" target="_blank" style="color: blue;">MetaMask</a> para seu navegador</li>
+                        <li>Crie ou importe uma carteira</li>
+                        <li>Recarregue a página e tente conectar novamente</li>
+                    </ul>
+                `;
+            }
+            return;
+        }
+        
+        try {
+            // Preferir provider da MetaMask quando houver múltiplos providers
+            const eth = (window.ethereum && Array.isArray(window.ethereum.providers))
+                ? window.ethereum.providers.find(p => p.isMetaMask) || window.ethereum
+                : window.ethereum;
 
-                // Atualizar UI do botão durante a conexão
-                const prevText = connectButton.textContent;
-                connectButton.textContent = 'Conectando...';
-                connectButton.disabled = true;
+            dbg('Provider detectado', eth.isMetaMask ? 'MetaMask' : 'Outro');
 
-                // Solicitar conexão
-                await eth.request({ method: 'eth_requestAccounts' });
-                provider = new ethers.providers.Web3Provider(eth);
-                signer = provider.getSigner();
-                contract = new ethers.Contract(contractAddress, abi, signer);
+            // Atualizar UI do botão durante a conexão
+            const prevText = connectButton.textContent;
+            connectButton.textContent = 'Conectando...';
+            connectButton.disabled = true;
 
-                // Verificar e mudar para BSC Mainnet se necessário
-                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-                if (chainId !== '0x38') { // 0x38 = BSC Mainnet
-                    try {
+            // Solicitar conexão
+            dbg('Solicitando contas...');
+            await eth.request({ method: 'eth_requestAccounts' });
+            
+            provider = new ethers.providers.Web3Provider(eth);
+            signer = provider.getSigner();
+            contract = new ethers.Contract(contractAddress, abi, signer);
+            
+            dbg('Contrato inicializado', contractAddress);
+
+            // Verificar e mudar para BSC Mainnet se necessário
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            dbg('Chain ID atual', chainId);
+            
+            if (chainId !== '0x38') { // 0x38 = BSC Mainnet
+                dbg('Rede incorreta, mudando para BSC Mainnet...');
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x38' }],
+                    });
+                    dbg('Mudou para BSC Mainnet');
+                } catch (switchError) {
+                    // Se a rede não estiver adicionada, adicionar
+                    if (switchError.code === 4902) {
+                        dbg('Adicionando BSC Mainnet...');
                         await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0x38' }],
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: '0x38',
+                                chainName: 'Binance Smart Chain Mainnet',
+                                nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+                                rpcUrls: ['https://bsc-dataseed1.binance.org/'],
+                                blockExplorerUrls: ['https://bscscan.com/'],
+                            }],
                         });
-                    } catch (switchError) {
-                        // Se a rede não estiver adicionada, adicionar
-                        if (switchError.code === 4902) {
-                            await window.ethereum.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [{
-                                    chainId: '0x38',
-                                    chainName: 'Binance Smart Chain Mainnet',
-                                    nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
-                                    rpcUrls: ['https://bsc-dataseed1.binance.org/'],
-                                    blockExplorerUrls: ['https://bscscan.com/'],
-                                }],
-                            });
-                        } else {
-                            throw switchError;
-                        }
+                        dbg('BSC Mainnet adicionada');
+                    } else {
+                        throw switchError;
                     }
                 }
-
-                showUserBalance();
-            } catch (err) {
-                if (err && (err.code === -32002)) {
-                    userInfo.innerHTML = `<p style="color: red;">Erro: Há uma solicitação pendente no MetaMask. Abra a extensão, aprove a solicitação e tente novamente.</p>`;
-                } else if (err && (err.code === 4001)) {
-                    userInfo.innerHTML = `<p style="color: red;">Solicitação rejeitada no MetaMask. Você cancelou a conexão.</p>`;
-                } else {
-                    userInfo.innerHTML = `<p style="color: red;">Erro ao conectar: ${err && err.message ? err.message : err}. Verifique se a extensão MetaMask está instalada e desbloqueada.</p>`;
-                }
-            } finally {
-                // Restaurar UI do botão
-                if (connectButton) {
-                    connectButton.textContent = 'Conectar Carteira';
-                    connectButton.disabled = false;
-                }
-                isConnecting = false;
             }
-        } else {
+
+            dbg('Conexão bem-sucedida!');
+            showUserBalance();
+        } catch (err) {
+            dbg('Erro na conexão', err?.message || err);
+            
+            if (err && (err.code === -32002)) {
+                userInfo.innerHTML = `<p style="color: red;">Erro: Há uma solicitação pendente no MetaMask. Abra ${isMobile() ? 'o app' : 'a extensão'}, aprove a solicitação e tente novamente.</p>`;
+            } else if (err && (err.code === 4001)) {
+                userInfo.innerHTML = `<p style="color: red;">Solicitação rejeitada no MetaMask. Você cancelou a conexão.</p>`;
+            } else {
+                userInfo.innerHTML = `<p style="color: red;">Erro ao conectar: ${err && err.message ? err.message : err}. Verifique se ${isMobile() ? 'o app MetaMask está instalado e desbloqueado' : 'a extensão MetaMask está instalada e desbloqueada'}.</p>`;
+            }
+        } finally {
+            // Restaurar UI do botão
+            if (connectButton) {
+                connectButton.textContent = 'Conectar Carteira';
+                connectButton.disabled = false;
+            }
             isConnecting = false;
-            userInfo.innerHTML = `
-                <p style="color: red;">MetaMask não encontrado.</p>
-                <p>Para usar o dApp:</p>
-                <ul style="text-align: left; display: inline-block;">
-                    <li>Instale a extensão <a href="https://metamask.io" target="_blank" style="color: blue;">MetaMask</a></li>
-                    <li>Crie ou importe uma carteira</li>
-                    <li>Recarregue a página e tente conectar novamente</li>
-                </ul>
-            `;
         }
     }
 
@@ -733,7 +866,71 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    // Detecção de plataforma
+    function isMobile() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        return /android|iphone|ipad|ipod/i.test(ua);
+    }
+
+    function isAndroid() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        return /android/i.test(ua);
+    }
+
+    function isIOS() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        return /iphone|ipad|ipod/i.test(ua);
+    }
+
+    function openInMetaMask() {
+        try {
+            const currentUrl = window.location.href;
+            const domain = window.location.host;
+            
+            // Usar universal link que funciona em todas as plataformas
+            const metamaskUrl = `https://metamask.app.link/dapp/${domain}`;
+            
+            dbg('Abrindo no MetaMask', metamaskUrl);
+            
+            // Abrir em nova aba para evitar perder a página atual
+            if (isMobile()) {
+                // Em mobile, redireciona diretamente
+                window.location.href = metamaskUrl;
+            } else {
+                // Em desktop, abre em nova aba
+                window.open(metamaskUrl, '_blank', 'noopener');
+            }
+        } catch (e) {
+            dbg('Erro ao abrir MetaMask', e?.message || e);
+            alert('Erro ao abrir MetaMask. Tente instalar o app MetaMask e abrir este site através dele.');
+        }
+    }
+
+    // Suprimir erros do MetaMask inpage.js no console
+    const originalError = console.error;
+    console.error = function(...args) {
+        const msg = args.join(' ');
+        // Suprimir apenas erros esperados do MetaMask quando não instalado
+        if (msg.includes('MetaMask extension not found') || 
+            msg.includes('Failed to connect to MetaMask')) {
+            return; // Não exibir no console
+        }
+        originalError.apply(console, args);
+    };
+    
+    // Suprimir erros de promise não tratadas do MetaMask
+    window.addEventListener('unhandledrejection', function(event) {
+        const msg = event.reason?.message || event.reason || '';
+        if (typeof msg === 'string' && 
+            (msg.includes('MetaMask extension not found') || 
+             msg.includes('Failed to connect to MetaMask'))) {
+            event.preventDefault(); // Prevenir que apareça no console
+            dbg('Erro do MetaMask suprimido (esperado quando não instalado)');
+        }
+    });
+
+    // Função para inicializar handlers após DOM carregar
+    function initHandlers() {
         const buyBtn = document.getElementById('buyBnbBtn');
         if (buyBtn) buyBtn.onclick = buyWithBNBHandler;
         const buyUsdtBtn = document.getElementById('buyUsdtBtn');
@@ -744,36 +941,56 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
         const openMMBtn = document.getElementById('openMMBtn');
         const verifyBtn = document.getElementById('verifyBtn');
         const watchTokenBtn = document.getElementById('watchTokenBtn');
+        const metamaskWarning = document.getElementById('metamaskWarning');
+        
+        // Verificar MetaMask e mostrar aviso se necessário
+        const hasMetaMask = window.ethereum && (window.ethereum.isMetaMask || 
+                           (window.ethereum.providers && window.ethereum.providers.some(p => p.isMetaMask)));
+        
+        if (!hasMetaMask && metamaskWarning) {
+            metamaskWarning.classList.remove('hidden');
+            dbg('⚠️ MetaMask não detectado - aviso exibido');
+        }
+        
         if (!window.ethereum) {
             if (btnConnect) {
-                btnConnect.textContent = 'Instalar MetaMask';
-                btnConnect.onclick = function() { window.open('https://metamask.io', '_blank'); };
+                if (isMobile()) {
+                    // Em mobile sem MetaMask, oferecer abrir no app
+                    btnConnect.textContent = 'Abrir no MetaMask';
+                    btnConnect.onclick = openInMetaMask;
+                } else {
+                    // Em desktop, oferecer instalação
+                    btnConnect.textContent = 'Instalar MetaMask';
+                    btnConnect.onclick = function() { window.open('https://metamask.io/download/', '_blank'); };
+                }
             }
             if (buyBtn) { buyBtn.disabled = true; buyBtn.classList.add('opacity-50','cursor-not-allowed'); }
             if (buyUsdtBtn) { buyUsdtBtn.disabled = true; buyUsdtBtn.classList.add('opacity-50','cursor-not-allowed'); }
             if (info) {
+                const mobileMsg = isMobile() 
+                    ? '<p>Toque no botão acima para abrir este site no app MetaMask.</p>'
+                    : '<p>Instale a extensão MetaMask para continuar.</p>';
                 info.innerHTML = `
                     <p style="color: red;">MetaMask não encontrado.</p>
-                    <p>Instale a extensão para prosseguir ou use o navegador da MetaMask no celular.</p>
-                    <a href="https://metamask.io" target="_blank" style="color: blue; text-decoration: underline;">Baixar MetaMask</a>
+                    ${mobileMsg}
+                    <a href="https://metamask.io/download/" target="_blank" style="color: blue; text-decoration: underline;">Baixar MetaMask</a>
                 `;
             }
         } else {
             if (openMMBtn) {
-                openMMBtn.onclick = function() {
-                    const url = window.location.href;
-                    const deeplink = 'https://metamask.app.link/dapp/' + url.replace(/^https?:\/\//, '');
-                    window.location.href = deeplink;
-                };
+                openMMBtn.onclick = openInMetaMask;
             }
             if (verifyBtn) {
                 verifyBtn.onclick = async function() {
                     try {
                         dbg('Verificando conexão...');
+                        dbg('Mobile?', isMobile() ? 'Sim' : 'Não');
+                        dbg('Platform', isAndroid() ? 'Android' : isIOS() ? 'iOS' : 'Desktop');
                         const chainId = window.ethereum ? await window.ethereum.request({ method: 'eth_chainId' }) : 'n/a';
                         dbg('chainId', chainId);
                         if (!provider) {
-                            dbg('provider ausente');
+                            dbg('provider ausente - conecte a carteira primeiro');
+                            alert('Conecte sua carteira primeiro clicando em "Conectar Carteira"');
                             return;
                         }
                         const accounts = await provider.listAccounts();
@@ -788,7 +1005,11 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                                 dbg('CDCN balance', ethers.utils.formatUnits(cdcnBal, 18));
                             }
                         }
-                    } catch (e) { dbg('verify error', e?.message || e); }
+                        alert('Verificação concluída! Veja o painel de depuração abaixo.');
+                    } catch (e) { 
+                        dbg('verify error', e?.message || e);
+                        alert('Erro na verificação: ' + (e?.message || e));
+                    }
                 };
             }
             if (watchTokenBtn) {
@@ -825,12 +1046,41 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                 }
             } catch (_) { /* ignore */ }
         }
-    });
+        
+        // Botão de limpar debug
+        const clearDebugBtn = document.getElementById('clearDebug');
+        if (clearDebugBtn) {
+            clearDebugBtn.onclick = function() {
+                const debugLog = document.getElementById('debugLog');
+                if (debugLog) debugLog.textContent = '';
+            };
+        }
+    }
 
-    connectButton.onclick = async () => {
-        await connectWallet();
-        await showUserBalance();
-    };
+    // Configurar botão de conectar
+    if (connectButton) {
+        connectButton.onclick = async () => {
+            await connectWallet();
+            await showUserBalance();
+        };
+    }
+
+    // Chamar initHandlers se DOM já estiver carregado, caso contrário esperar
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initHandlers);
+    } else {
+        initHandlers();
+    }
+
+    console.log('✅ dApp CDICoin inicializado com sucesso!');
+    
+        } // Fim da função initDApp
+
+        // Esperar ethers.js carregar antes de inicializar o dApp
+        waitForEthers(function() {
+            console.log('📦 ethers.js disponível, versão:', ethers.version);
+            initDApp();
+        });
 </script>
 </body>
 </html>
