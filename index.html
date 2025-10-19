@@ -180,6 +180,13 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
             </p>
             <button id="connectButton" class="bg-primary-green text-white px-8 py-3 rounded-lg hover:bg-secondary-green transition-colors" style="background-color: #059669; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;">Conectar Carteira</button>
             <div class="info mt-8 p-4 bg-white rounded-lg shadow-lg max-w-2xl mx-auto" id="userInfo"></div>
+            <div id="debugPanel" class="mt-4 p-3 bg-gray-900 text-gray-100 rounded max-w-2xl mx-auto text-left text-xs overflow-auto" style="max-height: 240px;">
+                <div class="flex justify-between items-center mb-2">
+                    <strong>Depuração</strong>
+                    <button id="clearDebug" class="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-xs">Limpar</button>
+                </div>
+                <pre id="debugLog" style="white-space: pre-wrap; word-break: break-word; margin: 0;"></pre>
+            </div>
             <div class="mt-8 max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
                     <div class="flex items-center mb-4">
@@ -507,9 +514,21 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
     const connectButton = document.getElementById("connectButton");
     const userInfo = document.getElementById("userInfo");
 
+    // Debug helpers
+    function dbg(msg, data) {
+        try {
+            const el = document.getElementById('debugLog');
+            const ts = new Date().toLocaleTimeString();
+            const suffix = (data === undefined) ? '' : ' ' + (typeof data === 'string' ? data : JSON.stringify(data));
+            if (el) el.textContent += `[${ts}] ${msg}${suffix}\n`;
+            console.log('[CDICoin]', msg, data ?? '');
+        } catch (_) { /* ignore debug errors */ }
+    }
+
     let isConnecting = false; // Flag para evitar múltiplas conexões
 
     async function connectWallet() {
+        dbg('Conectando carteira...');
         if (isConnecting) {
             alert("Conexão já em andamento. Aguarde...");
             return;
