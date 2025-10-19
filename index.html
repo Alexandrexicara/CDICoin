@@ -178,13 +178,26 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
             <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
                 Conecte sua carteira e gerencie seus CDICoins diretamente.
             </p>
-            <!-- Aviso MetaMask -->
+            <!-- Aviso MetaMask Desktop -->
             <div id="metamaskWarning" class="hidden mb-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 max-w-2xl mx-auto rounded">
                 <div class="flex items-center">
                     <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                     </svg>
                     <p class="font-semibold">⚠️ MetaMask não detectado. <a href="https://metamask.io/download/" target="_blank" class="underline font-bold">Clique aqui para instalar</a></p>
+                </div>
+            </div>
+            
+            <!-- Aviso especial Mobile -->
+            <div id="mobileWarning" class="hidden mb-6 p-6 bg-blue-50 border-2 border-blue-500 text-blue-900 max-w-2xl mx-auto rounded-lg shadow-lg">
+                <div class="text-center">
+                    <div class="text-4xl mb-3">📱</div>
+                    <h3 class="text-xl font-bold mb-3">Você está no celular!</h3>
+                    <p class="mb-4 text-sm">Para usar o dApp no celular, você precisa abrir este site DENTRO do navegador do MetaMask.</p>
+                    <button id="openMetaMaskMobile" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-4 px-6 rounded-lg shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all transform hover:scale-105 mb-3">
+                        🦊 Abrir no Navegador do MetaMask
+                    </button>
+                    <p class="text-xs text-gray-600">Ou copie o link e cole dentro do app MetaMask</p>
                 </div>
             </div>
             <button id="connectButton" class="bg-primary-green text-white px-8 py-3 rounded-lg hover:bg-secondary-green transition-colors" style="background-color: #059669; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;">Conectar Carteira</button>
@@ -232,16 +245,26 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                     <p class="text-xs text-gray-500 mt-2">Pode ser necessário aprovar USDT antes da compra.</p>
                 </div>
             </div>
-            <div class="mt-6 max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3">
-                <button id="openMMBtn" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-semibold py-2 rounded-lg shadow" title="Abrir este site no navegador da MetaMask (mobile)">
-                    Abrir no navegador da MetaMask
-                </button>
-                <button id="verifyBtn" class="w-full bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 rounded-lg shadow" title="Verificar conexão e saldos">
-                    Verificar Conexão
-                </button>
-                <button id="watchTokenBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 rounded-lg shadow" title="Adicionar CDCN na sua MetaMask">
-                    Adicionar CDCN na MetaMask
-                </button>
+            <div class="mt-6 max-w-3xl mx-auto">
+                <!-- Botão destaque para Mobile -->
+                <div class="md:hidden mb-4">
+                    <button id="openMMBtn" class="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform hover:scale-105 transition-all text-lg" title="Abrir este site no navegador da MetaMask (mobile)">
+                        🦊 Abrir no Navegador da MetaMask
+                    </button>
+                </div>
+                
+                <!-- Botões utilitários -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <button id="openMMBtnDesktop" class="hidden md:block w-full bg-blue-800 hover:bg-blue-900 text-white font-semibold py-2 rounded-lg shadow" title="Abrir este site no navegador da MetaMask">
+                        Abrir no navegador da MetaMask
+                    </button>
+                    <button id="verifyBtn" class="w-full bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 rounded-lg shadow" title="Verificar conexão e saldos">
+                        Verificar Conexão
+                    </button>
+                    <button id="watchTokenBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 rounded-lg shadow" title="Adicionar CDCN na sua MetaMask">
+                        Adicionar CDCN na MetaMask
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -939,17 +962,38 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
         const btnConnect = document.getElementById('connectButton');
         const info = document.getElementById('userInfo');
         const openMMBtn = document.getElementById('openMMBtn');
+        const openMMBtnDesktop = document.getElementById('openMMBtnDesktop');
         const verifyBtn = document.getElementById('verifyBtn');
         const watchTokenBtn = document.getElementById('watchTokenBtn');
         const metamaskWarning = document.getElementById('metamaskWarning');
+        const mobileWarning = document.getElementById('mobileWarning');
+        const openMetaMaskMobile = document.getElementById('openMetaMaskMobile');
         
         // Verificar MetaMask e mostrar aviso se necessário
         const hasMetaMask = window.ethereum && (window.ethereum.isMetaMask || 
                            (window.ethereum.providers && window.ethereum.providers.some(p => p.isMetaMask)));
         
-        if (!hasMetaMask && metamaskWarning) {
-            metamaskWarning.classList.remove('hidden');
-            dbg('⚠️ MetaMask não detectado - aviso exibido');
+        const isMobileDevice = isMobile();
+        
+        if (!hasMetaMask) {
+            if (isMobileDevice && mobileWarning) {
+                // Mostrar aviso especial mobile
+                mobileWarning.classList.remove('hidden');
+                dbg('📱 Mobile detectado sem MetaMask - aviso mobile exibido');
+                
+                // Configurar botão de abrir no MetaMask
+                if (openMetaMaskMobile) {
+                    openMetaMaskMobile.onclick = function() {
+                        openInMetaMask();
+                    };
+                }
+            } else if (!isMobileDevice && metamaskWarning) {
+                // Mostrar aviso desktop
+                metamaskWarning.classList.remove('hidden');
+                dbg('💻 Desktop sem MetaMask - aviso exibido');
+            }
+        } else {
+            dbg('✅ MetaMask detectado e funcionando');
         }
         
         if (!window.ethereum) {
@@ -977,8 +1021,12 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                 `;
             }
         } else {
+            // Configurar botões de abrir no MetaMask (mobile e desktop)
             if (openMMBtn) {
                 openMMBtn.onclick = openInMetaMask;
+            }
+            if (openMMBtnDesktop) {
+                openMMBtnDesktop.onclick = openInMetaMask;
             }
             if (verifyBtn) {
                 verifyBtn.onclick = async function() {
