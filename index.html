@@ -223,6 +223,17 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                     <p class="text-xs text-gray-500 mt-2">Pode ser necessário aprovar USDT antes da compra.</p>
                 </div>
             </div>
+            <div class="mt-6 max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3">
+                <button id="openMMBtn" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-semibold py-2 rounded-lg shadow" title="Abrir este site no navegador da MetaMask (mobile)">
+                    Abrir no navegador da MetaMask
+                </button>
+                <button id="verifyBtn" class="w-full bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 rounded-lg shadow" title="Verificar conexão e saldos">
+                    Verificar Conexão
+                </button>
+                <button id="watchTokenBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 rounded-lg shadow" title="Adicionar CDCN na sua MetaMask">
+                    Adicionar CDCN na MetaMask
+                </button>
+            </div>
         </div>
     </section>
     <section id="criptos" class="py-20">
@@ -653,6 +664,8 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
             }
         }
         try {
+            const btn = document.getElementById('buyBnbBtn');
+            if (btn) { btn.disabled = true; btn.classList.add('opacity-50','cursor-not-allowed'); }
             const input = document.getElementById('bnbBuyAmount');
             const bnbStr = (input?.value || '').trim();
             if (!bnbStr || Number(bnbStr) <= 0) {
@@ -667,6 +680,9 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
             alert('Compra concluída!');
         } catch (err) {
             alert("Erro na compra com BNB: " + (err?.message || err));
+        } finally {
+            const btn = document.getElementById('buyBnbBtn');
+            if (btn) { btn.disabled = false; btn.classList.remove('opacity-50','cursor-not-allowed'); }
         }
     }
 
@@ -681,6 +697,8 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
             }
         }
         try {
+            const btn = document.getElementById('buyUsdtBtn');
+            if (btn) { btn.disabled = true; btn.classList.add('opacity-50','cursor-not-allowed'); }
             const input = document.getElementById('usdtBuyAmount');
             const usdtStr = (input?.value || '').trim();
             if (!usdtStr || Number(usdtStr) <= 0) {
@@ -709,6 +727,9 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
             alert('Compra com USDT concluída!');
         } catch (err) {
             alert("Erro na compra com USDT: " + (err?.message || err));
+        } finally {
+            const btn = document.getElementById('buyUsdtBtn');
+            if (btn) { btn.disabled = false; btn.classList.remove('opacity-50','cursor-not-allowed'); }
         }
     }
 
@@ -720,6 +741,9 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
 
         const btnConnect = document.getElementById('connectButton');
         const info = document.getElementById('userInfo');
+        const openMMBtn = document.getElementById('openMMBtn');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const watchTokenBtn = document.getElementById('watchTokenBtn');
         if (!window.ethereum) {
             if (btnConnect) {
                 btnConnect.textContent = 'Instalar MetaMask';
@@ -735,6 +759,55 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                 `;
             }
         } else {
+            if (openMMBtn) {
+                openMMBtn.onclick = function() {
+                    const url = window.location.href;
+                    const deeplink = 'https://metamask.app.link/dapp/' + url.replace(/^https?:\/\//, '');
+                    window.location.href = deeplink;
+                };
+            }
+            if (verifyBtn) {
+                verifyBtn.onclick = async function() {
+                    try {
+                        dbg('Verificando conexão...');
+                        const chainId = window.ethereum ? await window.ethereum.request({ method: 'eth_chainId' }) : 'n/a';
+                        dbg('chainId', chainId);
+                        if (!provider) {
+                            dbg('provider ausente');
+                            return;
+                        }
+                        const accounts = await provider.listAccounts();
+                        dbg('accounts', accounts);
+                        if (accounts && accounts.length) {
+                            const addr = accounts[0];
+                            dbg('address', addr);
+                            const bnbBal = await provider.getBalance(addr);
+                            dbg('BNB balance', ethers.utils.formatEther(bnbBal));
+                            if (contract) {
+                                const cdcnBal = await contract.balanceOf(addr);
+                                dbg('CDCN balance', ethers.utils.formatUnits(cdcnBal, 18));
+                            }
+                        }
+                    } catch (e) { dbg('verify error', e?.message || e); }
+                };
+            }
+            if (watchTokenBtn) {
+                watchTokenBtn.onclick = async function() {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_watchAsset',
+                            params: {
+                                type: 'ERC20',
+                                options: {
+                                    address: '0xC5BbF987449d2AC90942D77228bc1657F5E88F49',
+                                    symbol: 'CDCN',
+                                    decimals: 18
+                                }
+                            }
+                        });
+                    } catch (e) { dbg('watchAsset error', e?.message || e); }
+                };
+            }
             // Listeners para mudanças de conta/rede
             try {
                 if (window.ethereum && window.ethereum.on) {
