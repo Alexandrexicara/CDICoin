@@ -144,6 +144,39 @@ COM TECNOLOGIA BLOCKCHAIN, SEGURANÇA, PROJEÇÃO FINANCEIRA E POTENCIAL DE DOBR
 
 🚀 ENTRE AGORA NA NOVA ERA DO INVESTIMENTO DIGITAL INTELIGENTE!
 QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
+
+
+
+
+COMO VAI FUCIONAR O FLUXO RENDIMENTO E VALORIZAÇÃO
+
+
+Após 1 ano:
+
+Rendimento CDI garantido:
+→ 14,90% × R$ 10.000 = R$ 1.490 ✅
+→ ISSO É GARANTIDO! ✅
+
+
+Se preço subiu 40%:
+────────────────────
+CDI: +R$ 1.490 ✅
+Valorização: +R$ 4.000 ✅
+Total: R$ 15.490 🚀
+
+
+Se preço caiu 20%:
+──────────────────
+CDI: +R$ 1.490 ✅ (mantido!)
+Desvalorização: -R$ 2.000 ❌
+Total: R$ 9.490 😐
+
+Análise:
+- Você GANHOU R$ 1.490 do CDI ✅
+- Você PERDEU R$ 2.000 na valorização ❌
+- Resultado final: -R$ 510
+
+MAS o CDI foi mantido! ✅
                         </p>
                     </div>
                 </div>
@@ -202,6 +235,71 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
             </div>
             <button id="connectButton" class="bg-primary-green text-white px-8 py-3 rounded-lg hover:bg-secondary-green transition-colors" style="background-color: #059669; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;">Conectar Carteira</button>
             <div class="info mt-8 p-4 bg-white rounded-lg shadow-lg max-w-2xl mx-auto" id="userInfo"></div>
+            
+            <!-- Painel do Investidor -->
+            <div id="investorPanel" class="hidden mt-8 max-w-4xl mx-auto">
+                <div class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-2xl p-8 text-white">
+                    <h2 class="text-3xl font-bold mb-6 text-center">📊 Painel do Investidor</h2>
+                    
+                    <!-- Saldo Principal -->
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-6 mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <p class="text-sm opacity-80">Seu Saldo Total</p>
+                                <p class="text-4xl font-bold" id="investorBalance">0.000000 CDCN</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm opacity-80">Valor em Reais</p>
+                                <p class="text-2xl font-bold text-green-300" id="investorValueBRL">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cards de Rendimento -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-white/10 backdrop-blur rounded-xl p-4">
+                            <p class="text-sm opacity-80 mb-2">📈 Rendimento CDI</p>
+                            <p class="text-2xl font-bold text-yellow-300">14,90% a.a.</p>
+                            <p class="text-xs opacity-70 mt-1">Rendimento anual</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur rounded-xl p-4">
+                            <p class="text-sm opacity-80 mb-2">💰 Rendimento Mensal</p>
+                            <p class="text-2xl font-bold text-green-300" id="monthlyYield">R$ 0,00</p>
+                            <p class="text-xs opacity-70 mt-1">Estimativa próximo mês</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur rounded-xl p-4">
+                            <p class="text-sm opacity-80 mb-2">🚀 Ganho em 12 meses</p>
+                            <p class="text-2xl font-bold text-purple-300" id="yearlyProfit">R$ 0,00</p>
+                            <p class="text-xs opacity-70 mt-1">CDI + Valorização</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Projeções -->
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-6">
+                        <h3 class="text-xl font-bold mb-4">🎯 Projeções de Crescimento</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="opacity-90">Rendimento CDI (14,90% a.a.):</span>
+                                <span class="font-bold text-yellow-300" id="projCDI">+R$ 0,00</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="opacity-90">Valorização CDCN (estimada 40%):</span>
+                                <span class="font-bold text-green-300" id="projValor">+R$ 0,00</span>
+                            </div>
+                            <div class="border-t border-white/20 pt-3 mt-3 flex justify-between items-center">
+                                <span class="font-bold">Total em 12 meses:</span>
+                                <span class="font-bold text-2xl text-purple-300" id="projTotal">R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data de Início -->
+                    <div class="mt-6 text-center opacity-70 text-sm">
+                        <p>📅 Investimento iniciado em: <span id="investmentDate">--/--/----</span></p>
+                        <p class="mt-1">⏱️ Próximo rendimento em: <span id="nextYieldDate">--/--/----</span></p>
+                    </div>
+                </div>
+            </div>
             <div id="debugPanel" class="mt-4 p-3 bg-gray-900 text-gray-100 rounded max-w-2xl mx-auto text-left text-xs overflow-auto" style="max-height: 240px;">
                 <div class="flex justify-between items-center mb-2">
                     <strong>Depuração</strong>
@@ -209,6 +307,58 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                 </div>
                 <pre id="debugLog" style="white-space: pre-wrap; word-break: break-word; margin: 0;"></pre>
             </div>
+            <!-- Calculadora de Conversão -->
+            <div class="mt-6 max-w-3xl mx-auto mb-6">
+                <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl shadow-lg p-6 border-2 border-green-300">
+                    <h3 class="text-xl font-bold text-center text-gray-800 mb-4">🧮 Calculadora de Conversão</h3>
+                    
+                    <!-- BNB Calculator -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">💛 Digite BNB:</label>
+                            <input id="calcBnb" type="number" step="0.0001" min="0" placeholder="0.001" class="w-full border-2 border-yellow-400 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500" oninput="calculateCDCN()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Você receberá:</label>
+                            <div class="bg-white border-2 border-yellow-400 rounded-lg px-4 py-2 font-bold text-yellow-600 text-lg">
+                                <span id="calcResultBnb">0</span> CDCN
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- USDT Calculator -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">💚 Digite USDT:</label>
+                            <input id="calcUsdt" type="number" step="0.01" min="0" placeholder="10.00" class="w-full border-2 border-emerald-400 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" oninput="calculateCDCNFromUSDT()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Você receberá:</label>
+                            <div class="bg-white border-2 border-emerald-400 rounded-lg px-4 py-2 font-bold text-emerald-600 text-lg">
+                                <span id="calcResultUsdt">0</span> CDCN
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-4 text-sm">
+                        <p class="text-gray-700 mb-2"><strong>💡 Taxa do Contrato:</strong></p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <p class="text-gray-600 font-semibold mb-1">Com BNB:</p>
+                                <p class="text-gray-600">• 1 CDCN = <span class="font-bold text-yellow-600">0.001 BNB</span></p>
+                                <p class="text-gray-600">• 1 BNB = <span class="font-bold text-yellow-600">1000 CDCN</span></p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 font-semibold mb-1">Com USDT:</p>
+                                <p class="text-gray-600">• 1 CDCN = <span class="font-bold text-emerald-600">R$ 10,00</span></p>
+                                <p class="text-gray-600">• 100 USDT (R$ 600) = <span class="font-bold text-emerald-600">60 CDCN</span></p>
+                            </div>
+                        </div>
+                        <p class="text-gray-500 text-xs mt-2">* Cotações variam conforme mercado (1 USDT ≈ R$ 6,00)</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="mt-8 max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
                     <div class="flex items-center mb-4">
@@ -219,8 +369,11 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                     </div>
                     <label for="bnbBuyAmount" class="block text-sm text-gray-600 mb-1">Quantidade em BNB</label>
                     <div class="relative mb-4">
-                        <input id="bnbBuyAmount" type="number" step="0.0001" min="0" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-4 pr-16 py-3 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                        <input id="bnbBuyAmount" type="number" step="0.0001" min="0" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-4 pr-16 py-3 focus:outline-none focus:ring-2 focus:ring-green-500" oninput="previewBnbPurchase()" />
                         <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">BNB</span>
+                    </div>
+                    <div id="bnbPreview" class="hidden mb-3 p-3 bg-green-50 border border-green-300 rounded text-sm text-green-800">
+                        Você receberá: <strong><span id="bnbPreviewAmount">0</span> CDCN</strong>
                     </div>
                     <button id="buyBnbBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg shadow">
                         Comprar com BNB
@@ -236,8 +389,11 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                     </div>
                     <label for="usdtBuyAmount" class="block text-sm text-gray-600 mb-1">Quantidade em USDT</label>
                     <div class="relative mb-4">
-                        <input id="usdtBuyAmount" type="number" step="0.01" min="0" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-4 pr-16 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <input id="usdtBuyAmount" type="number" step="0.01" min="0" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-4 pr-16 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="previewUsdtPurchase()" />
                         <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">USDT</span>
+                    </div>
+                    <div id="usdtPreview" class="hidden mb-3 p-3 bg-emerald-50 border border-emerald-300 rounded text-sm text-emerald-800">
+                        Você receberá: <strong><span id="usdtPreviewAmount">0</span> CDCN</strong>
                     </div>
                     <button id="buyUsdtBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow">
                         Comprar com USDT
@@ -364,7 +520,7 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                 <div class="bg-white p-8 rounded-lg shadow-lg text-center">
                     <h3 class="text-xl font-semibold text-primary-blue mb-4">CDICoin (CDI) - Referência Econômica</h3>
                     <div id="tradingview_cdi" class="w-full h-[300px]"></div>
-                    <p class="text-sm text-gray-600 mt-4">Dados em tempo real relacionados ao mercado brasileiro (BRL/USD). CDI Coin oferece retornos baseados em CDI + 50% valorização.</p>
+                    <p class="text-sm text-gray-600 mt-4">Índice Bovespa (IBOV) em tempo real - Principal indicador do mercado brasileiro. CDI Coin oferece retornos baseados em CDI (14,90% a.a.) + valorização estimada de 40%.</p>
                 </div>
             </div>
         </div>
@@ -497,13 +653,73 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
         })();
     </script>
     <script>
-        // Definir calcularTokens globalmente ANTES do DOMContentLoaded
+        // Taxas de conversão do contrato
+        const BNB_TO_CDCN_RATE = 1000; // 1 BNB = 1000 CDCN
+        const CDCN_PRICE_BRL = 10; // 1 CDCN = R$ 10,00
+        const USDT_TO_BRL = 6; // 1 USDT ≈ R$ 6,00 (cotação média)
+        const USDT_TO_CDCN_RATE = USDT_TO_BRL / CDCN_PRICE_BRL; // 1 USDT = 0.6 CDCN (exemplo: 6/10)
+        
+        // Calculadora de conversão BNB
+        window.calculateCDCN = function() {
+            const bnbAmount = parseFloat(document.getElementById('calcBnb')?.value) || 0;
+            const cdcnAmount = bnbAmount * BNB_TO_CDCN_RATE;
+            const resultEl = document.getElementById('calcResultBnb');
+            if (resultEl) {
+                resultEl.textContent = cdcnAmount.toFixed(2);
+            }
+        };
+        
+        // Calculadora de conversão USDT
+        window.calculateCDCNFromUSDT = function() {
+            const usdtAmount = parseFloat(document.getElementById('calcUsdt')?.value) || 0;
+            // Conversão: USDT em BRL / preço CDCN em BRL
+            // Exemplo: 100 USDT = R$ 600 / R$ 10 = 60 CDCN
+            const cdcnAmount = (usdtAmount * USDT_TO_BRL) / CDCN_PRICE_BRL;
+            const resultEl = document.getElementById('calcResultUsdt');
+            if (resultEl) {
+                resultEl.textContent = cdcnAmount.toFixed(2);
+            }
+        };
+        
+        // Preview da compra com BNB
+        window.previewBnbPurchase = function() {
+            const bnbAmount = parseFloat(document.getElementById('bnbBuyAmount')?.value) || 0;
+            const cdcnAmount = bnbAmount * BNB_TO_CDCN_RATE;
+            const previewEl = document.getElementById('bnbPreview');
+            const previewAmountEl = document.getElementById('bnbPreviewAmount');
+            
+            if (bnbAmount > 0 && previewEl && previewAmountEl) {
+                previewAmountEl.textContent = cdcnAmount.toFixed(2);
+                previewEl.classList.remove('hidden');
+            } else if (previewEl) {
+                previewEl.classList.add('hidden');
+            }
+        };
+        
+        // Preview da compra com USDT
+        window.previewUsdtPurchase = function() {
+            const usdtAmount = parseFloat(document.getElementById('usdtBuyAmount')?.value) || 0;
+            const cdcnAmount = (usdtAmount * USDT_TO_BRL) / CDCN_PRICE_BRL;
+            const previewEl = document.getElementById('usdtPreview');
+            const previewAmountEl = document.getElementById('usdtPreviewAmount');
+            
+            if (usdtAmount > 0 && previewEl && previewAmountEl) {
+                previewAmountEl.textContent = cdcnAmount.toFixed(2);
+                previewEl.classList.remove('hidden');
+            } else if (previewEl) {
+                previewEl.classList.add('hidden');
+            }
+        };
+        
+        // Definir calcularTokens globalmente (compatibilidade)
         window.calcularTokens = function() {
-            const bnbVal = parseFloat(document.getElementById('bnbAmount').value) || 0;
-            const usdtVal = parseFloat(document.getElementById('usdtAmount').value) || 0;
+            const bnbVal = parseFloat(document.getElementById('bnbAmount')?.value) || 0;
+            const usdtVal = parseFloat(document.getElementById('usdtAmount')?.value) || 0;
             const precoCDI = 10; // Preço de 1 CDI em reais
-            document.getElementById('bnbTokens').textContent = 'Tokens CDI: ' + (bnbVal * 100).toFixed(2);
-            document.getElementById('usdtTokens').textContent = 'Tokens CDI: ' + (usdtVal / precoCDI).toFixed(2);
+            const bnbTokensEl = document.getElementById('bnbTokens');
+            const usdtTokensEl = document.getElementById('usdtTokens');
+            if (bnbTokensEl) bnbTokensEl.textContent = 'Tokens CDI: ' + (bnbVal * 100).toFixed(2);
+            if (usdtTokensEl) usdtTokensEl.textContent = 'Tokens CDI: ' + (usdtVal / precoCDI).toFixed(2);
         };
 
         // Função para verificar se ethers está carregado
@@ -594,8 +810,9 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                 });
                 new TradingView.widget({
                     "container_id": "tradingview_cdi",
-                    "symbol": "FX:USDBRL",
+                    "symbol": "BMFBOVESPA:IBOV",
                     "interval": "1D",
+                    "timezone": "America/Sao_Paulo",
                     "theme": "light",
                     "style": "1",
                     "locale": "pt_BR",
@@ -804,8 +1021,59 @@ QUEM ENTRA NO INÍCIO COLHE OS MAIORES RESULTADOS!
                 <p><strong>Endereço:</strong> ${userAddress}</p>
                 <p><strong>Saldo CDICoin:</strong> ${balanceTokens.toFixed(6)} CDCN</p>
             `;
+            
+            // Atualizar painel do investidor
+            updateInvestorPanel(balanceTokens);
         } catch (err) {
             userInfo.innerHTML = `<p style="color: red;">Erro ao buscar saldo: ${(err && err.message) ? err.message : err}</p>`;
+        }
+    }
+    
+    function updateInvestorPanel(balanceTokens) {
+        const investorPanel = document.getElementById('investorPanel');
+        
+        // Mostrar painel apenas se tiver saldo
+        if (balanceTokens > 0 && investorPanel) {
+            investorPanel.classList.remove('hidden');
+            
+            // Constantes
+            const CDCN_PRICE_BRL = 10; // R$ 10,00 por CDCN
+            const CDI_RATE_YEARLY = 0.1490; // 14,90% ao ano
+            const ESTIMATED_APPRECIATION = 0.40; // 40% valorização estimada
+            
+            // Cálculos
+            const valueBRL = balanceTokens * CDCN_PRICE_BRL;
+            const cdiYearlyGain = valueBRL * CDI_RATE_YEARLY;
+            const monthlyYield = cdiYearlyGain / 12;
+            const appreciationGain = valueBRL * ESTIMATED_APPRECIATION;
+            const totalYearlyProfit = cdiYearlyGain + appreciationGain;
+            
+            // Atualizar elementos
+            const investorBalance = document.getElementById('investorBalance');
+            const investorValueBRL = document.getElementById('investorValueBRL');
+            const monthlyYieldEl = document.getElementById('monthlyYield');
+            const yearlyProfitEl = document.getElementById('yearlyProfit');
+            const projCDI = document.getElementById('projCDI');
+            const projValor = document.getElementById('projValor');
+            const projTotal = document.getElementById('projTotal');
+            const investmentDate = document.getElementById('investmentDate');
+            const nextYieldDate = document.getElementById('nextYieldDate');
+            
+            if (investorBalance) investorBalance.textContent = `${balanceTokens.toFixed(6)} CDCN`;
+            if (investorValueBRL) investorValueBRL.textContent = `R$ ${valueBRL.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            if (monthlyYieldEl) monthlyYieldEl.textContent = `R$ ${monthlyYield.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            if (yearlyProfitEl) yearlyProfitEl.textContent = `R$ ${totalYearlyProfit.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            if (projCDI) projCDI.textContent = `+R$ ${cdiYearlyGain.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            if (projValor) projValor.textContent = `+R$ ${appreciationGain.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            if (projTotal) projTotal.textContent = `R$ ${(valueBRL + totalYearlyProfit).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            
+            // Datas
+            const today = new Date();
+            const nextMonth = new Date(today);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            
+            if (investmentDate) investmentDate.textContent = today.toLocaleDateString('pt-BR');
+            if (nextYieldDate) nextYieldDate.textContent = nextMonth.toLocaleDateString('pt-BR');
         }
     }
 
