@@ -656,26 +656,183 @@
                     </a>
                 </div>
 
-        <div class="container mx-auto px-6 text-center">
-            <h2 class="text-3xl font-bold text-primary-blue mb-8">Entre em Contato</h2>
-            <p class="text-lg text-gray-600 mb-8">
-                Interessado em saber mais sobre a CDICoin? Entre em contato conosco.
-            </p>
-            <div class="flex justify-center space-x-4">
-                <button class="bg-primary-green text-white px-8 py-3 rounded-lg hover:bg-secondary-green transition-colors">
-                    Enviar Mensagem
-                </button>
-                <a href="mailto:contato@cdicoin.com" class="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors">
-                    Enviar Email
-                </a>
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-primary-blue mb-4 text-center">📧 Entre em Contato</h2>
+                <p class="text-lg text-gray-600 mb-8 text-center">
+                    Interessado em saber mais sobre a CDICoin? Estamos aqui para ajudar!
+                </p>
+                
+                <!-- Mensagem de Confirmação -->
+                <div id="contactConfirmation" class="hidden mb-6 bg-green-50 border-2 border-green-400 rounded-xl p-6 text-center shadow-lg">
+                    <div class="text-6xl mb-3">✅</div>
+                    <h3 class="text-2xl font-bold text-green-600 mb-2">Mensagem Enviada com Sucesso!</h3>
+                    <p class="text-gray-700 mb-2">
+                        Obrigado pelo contato! Recebemos sua mensagem e retornaremos em breve.
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        Verifique sua caixa de entrada para a confirmação automática.
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Formulário de Contato -->
+                    <div class="bg-white rounded-2xl shadow-xl p-8">
+                        <h3 class="text-xl font-bold text-primary-blue mb-6">💬 Envie sua Mensagem</h3>
+                        <form id="contactForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Nome Completo</label>
+                                <input 
+                                    type="text" 
+                                    id="contactName" 
+                                    required
+                                    class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                    placeholder="Seu nome"
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                                <input 
+                                    type="email" 
+                                    id="contactEmail" 
+                                    required
+                                    class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                    placeholder="seu@email.com"
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Mensagem</label>
+                                <textarea 
+                                    id="contactMessage" 
+                                    required
+                                    rows="5"
+                                    class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none"
+                                    placeholder="Como podemos ajudar?"
+                                ></textarea>
+                            </div>
+                            <button 
+                                type="submit"
+                                class="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold py-4 rounded-lg hover:from-green-700 hover:to-blue-700 transition-all transform hover:scale-105 shadow-lg"
+                            >
+                                Enviar Mensagem 📩
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Informações de Contato -->
+                    <div class="space-y-6">
+                        <!-- Email Direto -->
+                        <div class="bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl shadow-xl p-8 border-2 border-blue-200">
+                            <h3 class="text-xl font-bold text-primary-blue mb-4">📧 Email Direto</h3>
+                            <a href="mailto:cdicoin@gmail.com" class="text-2xl font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                                cdicoin@gmail.com
+                            </a>
+                            <p class="text-gray-600 mt-4">
+                                Envie um email diretamente para nossa equipe. Respondemos em até 24 horas!
+                            </p>
+                            <a 
+                                href="mailto:cdicoin@gmail.com" 
+                                class="inline-block mt-4 bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                            >
+                                Abrir Cliente de Email ✉️
+                            </a>
+                        </div>
+                        
+                        <!-- Horário de Atendimento -->
+                        <div class="bg-white rounded-2xl shadow-xl p-8">
+                            <h3 class="text-xl font-bold text-primary-blue mb-4">🕐 Horário de Atendimento</h3>
+                            <div class="space-y-2 text-gray-700">
+                                <p><strong>Segunda a Sexta:</strong> 9h às 18h</p>
+                                <p><strong>Sábado:</strong> 9h às 13h</p>
+                                <p><strong>Domingo:</strong> Fechado</p>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-4">
+                                * Horário de Brasília (GMT-3)
+                            </p>
+                        </div>
+                        
+                        <!-- Redes Sociais -->
+                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-xl p-8 border-2 border-purple-200">
+                            <h3 class="text-xl font-bold text-primary-blue mb-4">🌐 Siga-nos</h3>
+                            <p class="text-gray-600 mb-4">
+                                Acompanhe nossas novidades e atualizações:
+                            </p>
+                            <div class="flex flex-wrap gap-3">
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                    Facebook
+                                </button>
+                                <button class="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors">
+                                    Twitter
+                                </button>
+                                <button class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors">
+                                    Instagram
+                                </button>
+                                <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    YouTube
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-blue-900 text-white py-8 mt-auto">
-        <div class="container mx-auto px-6 text-center">
-            <p>&copy; 2023 CDICoin. Todos os direitos reservados.</p>
+    <footer class="bg-gradient-to-br from-blue-900 to-purple-900 text-white py-12 mt-auto">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <!-- Sobre -->
+                <div>
+                    <h4 class="text-xl font-bold mb-4">CDICoin (CDCN)</h4>
+                    <p class="text-gray-300 text-sm">
+                        A criptomoeda brasileira atrelada ao CDI. Segurança, rendimento e valorização em um único ativo digital.
+                    </p>
+                </div>
+                
+                <!-- Links Rápidos -->
+                <div>
+                    <h4 class="text-xl font-bold mb-4">Links Rápidos</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#sobre" class="text-gray-300 hover:text-green-400 transition-colors">Sobre</a></li>
+                        <li><a href="#recursos" class="text-gray-300 hover:text-green-400 transition-colors">Recursos</a></li>
+                        <li><a href="#dapp" class="text-gray-300 hover:text-green-400 transition-colors">dApp</a></li>
+                        <li><a href="#comprar" class="text-gray-300 hover:text-green-400 transition-colors">Comprar</a></li>
+                        <li><a href="#contato" class="text-gray-300 hover:text-green-400 transition-colors">Contato</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contato -->
+                <div>
+                    <h4 class="text-xl font-bold mb-4">Contato</h4>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-2">📧</span>
+                            <a href="mailto:cdicoin@gmail.com" class="text-gray-300 hover:text-green-400 transition-colors">
+                                cdicoin@gmail.com
+                            </a>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-2">🕐</span>
+                            <span class="text-gray-300">Seg-Sex: 9h às 18h</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-2">🌐</span>
+                            <span class="text-gray-300">Horário de Brasília</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="border-t border-white/20 pt-8 text-center">
+                <p class="text-gray-300 text-sm">
+                    &copy; 2025 CDICoin. Todos os direitos reservados.
+                </p>
+                <p class="text-gray-400 text-xs mt-2">
+                    Investimentos em criptomoedas envolvem riscos. Consulte um profissional financeiro antes de investir.
+                </p>
+            </div>
         </div>
     </footer>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
@@ -1287,10 +1444,49 @@
 
     // Função para inicializar handlers após DOM carregar
     function initHandlers() {
+        // Handlers de compra
         const buyBtn = document.getElementById('buyBnbBtn');
         if (buyBtn) buyBtn.onclick = buyWithBNBHandler;
         const buyUsdtBtn = document.getElementById('buyUsdtBtn');
         if (buyUsdtBtn) buyUsdtBtn.onclick = buyWithUSDTHandler;
+        
+        // Handler do formulário de contato
+        const contactForm = document.getElementById('contactForm');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('contactName').value;
+                const email = document.getElementById('contactEmail').value;
+                const message = document.getElementById('contactMessage').value;
+                
+                // Criar link mailto com os dados
+                const subject = `Contato de ${name}`;
+                const body = `Nome: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMensagem:%0D%0A${message}`;
+                const mailtoLink = `mailto:cdicoin@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+                
+                // Abrir cliente de email
+                window.location.href = mailtoLink;
+                
+                // Mostrar mensagem de confirmação
+                const confirmation = document.getElementById('contactConfirmation');
+                if (confirmation) {
+                    confirmation.classList.remove('hidden');
+                    // Scroll suave até a confirmação
+                    confirmation.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                
+                // Limpar formulário
+                contactForm.reset();
+                
+                // Esconder confirmação após 10 segundos
+                setTimeout(() => {
+                    if (confirmation) {
+                        confirmation.classList.add('hidden');
+                    }
+                }, 10000);
+            });
+        }
 
         const btnConnect = document.getElementById('connectButton');
         const info = document.getElementById('userInfo');
