@@ -475,16 +475,33 @@
                 </div>
                 
                 <!-- Botões utilitários -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                     <button id="openMMBtnDesktop" class="hidden md:block w-full bg-blue-800 hover:bg-blue-900 text-white font-semibold py-2 rounded-lg shadow" title="Abrir este site no navegador da MetaMask">
                         Abrir no navegador da MetaMask
                     </button>
                     <button id="verifyBtn" class="w-full bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 rounded-lg shadow" title="Verificar conexão e saldos">
                         Verificar Conexão
                     </button>
-                    <button id="watchTokenBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2 rounded-lg shadow" title="Adicionar CDCN na sua MetaMask">
-                        Adicionar CDCN na MetaMask
-                    </button>
+                </div>
+                
+                <!-- Botões para Adicionar Tokens na MetaMask -->
+                <div class="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-4 border-2 border-green-300">
+                    <h4 class="text-center font-bold text-gray-800 mb-3">🦊 Adicionar Tokens na MetaMask</h4>
+                    <p class="text-center text-sm text-gray-600 mb-3">Clique nos botões abaixo para visualizar seus saldos na carteira</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button id="watchBnbBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 rounded-lg shadow-md transform hover:scale-105 transition-all" title="Adicionar BNB (já aparece automaticamente na BSC)">
+                            💛 BNB
+                        </button>
+                        <button id="watchUsdtBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg shadow-md transform hover:scale-105 transition-all" title="Adicionar USDT na sua MetaMask">
+                            💚 USDT
+                        </button>
+                        <button id="watchTokenBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg shadow-md transform hover:scale-105 transition-all" title="Adicionar CDCN na sua MetaMask">
+                            💎 CDCN
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 text-center mt-3">
+                        ℹ️ BNB já aparece automaticamente. USDT e CDCN precisam ser adicionados manualmente.
+                    </p>
                 </div>
             </div>
         </div>
@@ -1589,9 +1606,51 @@
                     }
                 };
             }
+            // Handler para adicionar BNB
+            const watchBnbBtn = document.getElementById('watchBnbBtn');
+            if (watchBnbBtn) {
+                watchBnbBtn.onclick = async function() {
+                    try {
+                        dbg('BNB é a moeda nativa da BSC - já aparece automaticamente');
+                        alert('✅ BNB é a moeda nativa da BSC Mainnet!\n\nSeu saldo de BNB já aparece automaticamente na MetaMask quando você está conectado à rede BSC.\n\nNão precisa adicionar manualmente. 😊');
+                    } catch (e) { dbg('BNB info error', e?.message || e); }
+                };
+            }
+            
+            // Handler para adicionar USDT
+            const watchUsdtBtn = document.getElementById('watchUsdtBtn');
+            if (watchUsdtBtn) {
+                watchUsdtBtn.onclick = async function() {
+                    try {
+                        dbg('Adicionando USDT na MetaMask...');
+                        await window.ethereum.request({
+                            method: 'wallet_watchAsset',
+                            params: {
+                                type: 'ERC20',
+                                options: {
+                                    address: '0x55d398326f99059fF775485246999027B3197955',
+                                    symbol: 'USDT',
+                                    decimals: 18,
+                                    image: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0x55d398326f99059fF775485246999027B3197955/logo.png'
+                                }
+                            }
+                        });
+                        dbg('USDT adicionado com sucesso!');
+                        alert('✅ USDT adicionado à MetaMask!\n\nAgora você pode ver seu saldo de USDT na carteira.');
+                    } catch (e) { 
+                        dbg('watchAsset USDT error', e?.message || e);
+                        if (e?.code === 4001) {
+                            alert('Você cancelou a adição do USDT.');
+                        }
+                    }
+                };
+            }
+            
+            // Handler para adicionar CDCN
             if (watchTokenBtn) {
                 watchTokenBtn.onclick = async function() {
                     try {
+                        dbg('Adicionando CDCN na MetaMask...');
                         await window.ethereum.request({
                             method: 'wallet_watchAsset',
                             params: {
@@ -1603,7 +1662,14 @@
                                 }
                             }
                         });
-                    } catch (e) { dbg('watchAsset error', e?.message || e); }
+                        dbg('CDCN adicionado com sucesso!');
+                        alert('✅ CDCN adicionado à MetaMask!\n\nAgora você pode ver seu saldo de CDICoin na carteira.');
+                    } catch (e) { 
+                        dbg('watchAsset CDCN error', e?.message || e);
+                        if (e?.code === 4001) {
+                            alert('Você cancelou a adição do CDCN.');
+                        }
+                    }
                 };
             }
             // Listeners para mudanças de conta/rede
